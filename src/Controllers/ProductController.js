@@ -2,32 +2,23 @@ const ProductService = require("../services/ProductService");
 
 const createProduct = async (req, res) => {
   try {
-    const {
-      name,
-      image,
-      type,
-      countInStock,
-      price,
-      rating,
-      description,
-      discount,
-    } = req.body;
-    if (
-      !name ||
-      !image ||
-      !type ||
-      !countInStock ||
-      !price ||
-      !rating ||
-      !discount
-    ) {
+    const { name, images, type, countInStock, price, description, discount } =
+      req.body;
+    if (!name || !images || !type || !countInStock || !price || !discount) {
       return res.status(403).json({
         status: "ERR",
-        message: "The input is required",
+        message: "Kiểm tra lại thông tin",
       });
     }
-    const response = await ProductService.createProduct(req.body);
-    return res.status(200).json(response);
+
+    const response = await ProductService.createProduct({
+      newProduct: req.body,
+    });
+
+    if (!response.data) {
+      return res.status(404).json(response);
+    }
+    return res.status(202).json(response);
   } catch (e) {
     return res.status(404).json({
       message: e,
@@ -42,7 +33,7 @@ const updateProduct = async (req, res) => {
     if (!productId) {
       return res.status(403).json({
         status: "ERR",
-        message: "The productId is required",
+        message: "Kiểm tra lại thông tin",
       });
     }
     const response = await ProductService.updateProduct(productId, data);
@@ -60,7 +51,7 @@ const getDetailsProduct = async (req, res) => {
     if (!productId) {
       return res.status(403).json({
         status: "ERR",
-        message: "The productId is required",
+        message: "Kiểm tra lại thông tin",
       });
     }
     const response = await ProductService.getDetailsProduct(productId);
@@ -78,7 +69,7 @@ const deleteProduct = async (req, res) => {
     if (!productId) {
       return res.status(403).json({
         status: "ERR",
-        message: "The productId is required",
+        message: "Kiểm tra lại thông tin",
       });
     }
     const response = await ProductService.deleteProduct(productId);
@@ -96,7 +87,7 @@ const deleteMany = async (req, res) => {
     if (!ids) {
       return res.status(403).json({
         status: "ERR",
-        message: "The ids is required",
+        message: "Kiểm tra lại thông tin",
       });
     }
     const response = await ProductService.deleteManyProduct(ids);

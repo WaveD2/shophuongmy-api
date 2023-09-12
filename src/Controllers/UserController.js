@@ -9,25 +9,23 @@ const createUser = async (req, res) => {
     if (!email || !password || !confirmPassword) {
       return res.status(403).json({
         status: "ERR",
-        message: "The input is required",
+        message: "Kiểm tra lại thông tin",
       });
     } else if (!isCheckEmail) {
       return res.status(403).json({
         status: "ERR",
-        message: "The input is email",
+        message: "Vui lòng nhập email",
       });
     } else if (password !== confirmPassword) {
       return res.status(403).json({
         status: "ERR",
-        message: "The password is equal confirmPassword",
+        message: "Mật khẩu không chính xác",
       });
     }
     const response = await UserService.createUser(req.body);
     return res.status(200).json(response);
   } catch (e) {
-    return res.status(404).json({
-      message: e,
-    });
+    return res.status(404).json(e);
   }
 };
 
@@ -39,12 +37,12 @@ const loginUser = async (req, res) => {
     if (!email || !password) {
       return res.status(403).json({
         status: "ERR",
-        message: "The input is required",
+        message: "Kiểm tra lại thông tin",
       });
     } else if (!isCheckEmail) {
       return res.status(403).json({
         status: "ERR",
-        message: "The input is email",
+        message: "Vui lòng nhập email",
       });
     }
     const user = await UserService.loginUser(req.body);
@@ -72,7 +70,7 @@ const updateUser = async (req, res) => {
     if (!userId) {
       return res.status(403).json({
         status: "ERR",
-        message: "The userId is required",
+        message: "Lỗi thông tin ID người dùng",
       });
     }
     const response = await UserService.updateUser(userId, data);
@@ -90,13 +88,14 @@ const deleteUser = async (req, res) => {
     if (!userId) {
       return res.status(403).json({
         status: "ERR",
-        message: "The userId is required",
+        message: "Kiểm tra lại thông tin",
       });
     }
     const response = await UserService.deleteUser(userId);
     return res.status(200).json(response);
   } catch (e) {
     return res.status(404).json({
+      status: "ERR",
       message: e,
     });
   }
@@ -108,7 +107,7 @@ const deleteMany = async (req, res) => {
     if (!ids) {
       return res.status(403).json({
         status: "ERR",
-        message: "The ids is required",
+        message: "Lỗi thông tin người dùng",
       });
     }
     const response = await UserService.deleteManyUser(ids);
@@ -137,7 +136,7 @@ const getDetailsUser = async (req, res) => {
     if (!userId) {
       return res.status(403).json({
         status: "ERR",
-        message: "The userId is required",
+        message: "Lỗi thông tin người dùng",
       });
     }
     const response = await UserService.getDetailsUser(userId);
@@ -172,7 +171,7 @@ const logoutUser = async (req, res) => {
     res.clearCookie("refresh_token");
     return res.status(200).json({
       status: "OK",
-      message: "Logout successfully",
+      message: "Đăng xuất thành công",
     });
   } catch (e) {
     return res.status(404).json({

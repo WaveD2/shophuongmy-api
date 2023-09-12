@@ -1,16 +1,18 @@
 const Product = require("../Model/ProductModel");
 
-const createProduct = (newProduct) => {
+const createProduct = ({ newProduct }) => {
   return new Promise(async (resolve, reject) => {
     const {
       name,
-      image,
+      images,
       type,
       countInStock,
       price,
-      rating,
       description,
       discount,
+      colors,
+      size,
+      isStatus,
     } = newProduct;
     try {
       const checkProduct = await Product.findOne({
@@ -19,23 +21,26 @@ const createProduct = (newProduct) => {
       if (checkProduct !== null) {
         resolve({
           status: "ERR",
-          message: "The name of product is already",
+          message: "Tên sản phẩm này đã có",
         });
       }
       const newProduct = await Product.create({
         name,
-        image,
+        images,
         type,
         countInStock: Number(countInStock),
         price,
-        rating,
         description,
         discount: Number(discount),
+        colors,
+        size,
+        isStatus,
       });
+      console.log("newProduct", newProduct);
       if (newProduct) {
         resolve({
           status: "OK",
-          message: "SUCCESS",
+          message: "Thành công",
           data: newProduct,
         });
       }
@@ -54,7 +59,7 @@ const updateProduct = (id, data) => {
       if (checkProduct === null) {
         resolve({
           status: "ERR",
-          message: "The product is not defined",
+          message: "Sản phẩm không tồn tại",
         });
       }
 
@@ -81,14 +86,14 @@ const deleteProduct = (id) => {
       if (checkProduct === null) {
         resolve({
           status: "ERR",
-          message: "The product is not defined",
+          message: "Không tìm thấy sản phẩm",
         });
       }
 
       await Product.findByIdAndDelete(id);
       resolve({
         status: "OK",
-        message: "Delete product success",
+        message: "Xóa sản phẩm thành công",
       });
     } catch (e) {
       reject(e);
@@ -102,7 +107,7 @@ const deleteManyProduct = (ids) => {
       await Product.deleteMany({ _id: ids });
       resolve({
         status: "OK",
-        message: "Delete product success",
+        message: "Xóa sản phẩm thành công",
       });
     } catch (e) {
       reject(e);
@@ -119,7 +124,7 @@ const getDetailsProduct = (id) => {
       if (product === null) {
         reject({
           status: "ERR",
-          message: "The product is not defined",
+          message: "Sản phẩm không tồn tại",
         });
       }
 
