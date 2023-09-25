@@ -6,9 +6,10 @@ const {
   authUserMiddleware,
 } = require("../middleware/authMiddleware");
 
-router.get("/get-all", authUserMiddleware, ProductController.getAllProduct);
+router.get("/search", ProductController.searchProduct);
+router.get("/get-all", ProductController.getAllProduct);
 router.get("/get-details/:id", ProductController.getDetailsProduct);
-
+// authUserMiddleware,
 router.get("/type/:type", ProductController.getProductType);
 router.get("/get-all-type", ProductController.getAllType);
 router.post("/create", authMiddleware, ProductController.createProduct);

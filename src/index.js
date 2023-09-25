@@ -25,7 +25,7 @@ mongoose
     console.log("Connect Db success!");
   })
   .catch((err) => {
-    console.log(err);
+    console.log("Lỗi kết db");
   });
 app.listen(port, () => {
   console.log("Server is running in port: ", +port);

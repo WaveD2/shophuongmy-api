@@ -146,9 +146,27 @@ const getProductType = async (req, res) => {
     });
   }
 };
+const searchProduct = async (req, res) => {
+  const nameSearch = req.query.q;
+  if (nameSearch) {
+    try {
+      const response = await ProductService.searchProduct({ nameSearch });
+      return res.status(200).json(response);
+    } catch (e) {
+      return res.status(404).json({
+        message: e,
+      });
+    }
+  } else {
+    return res.status(404).json({
+      message: "Error type products ",
+    });
+  }
+};
 
 module.exports = {
   createProduct,
+  searchProduct,
   updateProduct,
   getDetailsProduct,
   deleteProduct,

@@ -140,50 +140,59 @@ const getDetailsProduct = (id) => {
 };
 
 const getAllProduct = (limit, page, sort, filter) => {
+  console.log(limit, page, sort, filter);
   return new Promise(async (resolve, reject) => {
     try {
       const totalProduct = await Product.count();
-      let allProduct = [];
+      if (!limit && !page && !sort && !filter) {
+        const allObject = await Product.find({});
+        resolve({
+          data: allObject,
+          totalProduct,
+        });
+      }
 
+      let allProduct = [];
+      let nameLabel = filter[0];
+
+      if (filter && !sort) {
+        const allObjectFilter = await Product.find({
+          [nameLabel]: { $regex: filter[1], $options: "i" },
+        })
+          .limit(limit)
+          .skip(page * limit)
+          .sort({ createdAt: -1, updatedAt: -1 });
+        resolve({
+          status: "OK",
+          message: "Success",
+          data: allObjectFilter,
+          total: allObjectFilter.length,
+          pageCurrent: Number(page + 1),
+          totalPage: Math.ceil(totalProduct / limit),
+        });
+      }
+      if (sort && !filter) {
+        const objectSort = {};
+        objectSort[sort[1]] = sort[0];
+        const allProductSort = await Product.find()
+          .limit(limit)
+          .skip(page * limit)
+          .sort(objectSort)
+          .sort({ createdAt: -1, updatedAt: -1 });
+        resolve({
+          status: "OK",
+          message: "Success",
+          data: allProductSort,
+          total: totalProduct,
+          pageCurrent: Number(page + 1),
+          totalPage: Math.ceil(totalProduct / limit),
+        });
+      }
       if (!limit) {
         allProduct = await Product.find().sort({
           createdAt: -1,
           updatedAt: -1,
         });
-        if (filter) {
-          const label = filter[0];
-          const allObjectFilter = await Product.find({
-            [label]: { $regex: filter[1] },
-          })
-            .limit(limit)
-            .skip(page * limit)
-            .sort({ createdAt: -1, updatedAt: -1 });
-          resolve({
-            status: "OK",
-            message: "Success",
-            data: allObjectFilter,
-            total: totalProduct,
-            pageCurrent: Number(page + 1),
-            totalPage: Math.ceil(totalProduct / limit),
-          });
-        }
-        if (sort) {
-          const objectSort = {};
-          objectSort[sort[1]] = sort[0];
-          const allProductSort = await Product.find()
-            .limit(limit)
-            .skip(page * limit)
-            .sort(objectSort)
-            .sort({ createdAt: -1, updatedAt: -1 });
-          resolve({
-            status: "OK",
-            message: "Success",
-            data: allProductSort,
-            total: totalProduct,
-            pageCurrent: Number(page + 1),
-            totalPage: Math.ceil(totalProduct / limit),
-          });
-        }
       } else {
         allProduct = await Product.find()
           .limit(limit)
