@@ -7,23 +7,24 @@ const createOrder = (newOrder) => {
     const {
       orderItems,
       paymentMethod,
-      itemsPrice,
       shippingPrice,
       totalPrice,
       fullName,
-      address,
       city,
       phone,
       user,
       isPaid,
       paidAt,
       email,
+      province,
+      district,
+      address,
     } = newOrder;
     try {
       const promises = orderItems.map(async (order) => {
         const productData = await Product.findOneAndUpdate(
           {
-            _id: order.product,
+            _id: order.id,
             countInStock: { $gte: order.amount },
           },
           {
@@ -45,46 +46,47 @@ const createOrder = (newOrder) => {
           return {
             status: "OK",
             message: "ERR",
-            id: order.product,
           };
         }
       });
-      const results = await Promise.all(promises);
-      const newData = results && results.filter((item) => item.id);
-      if (newData.length) {
-        const arrId = [];
-        newData.forEach((item) => {
-          arrId.push(item.id);
-        });
+      // const results = await Promise.all(promises);
+      // const newData = results && results.filter((item) => item._id);
+      // console.log("newData", newData);
+      // if (newData.length) {
+      //   const arrId = [];
+      //   newData.forEach((item) => {
+      //     arrId.push(item.id);
+      //   });
+      //   resolve({
+      //     status: "ERR",
+      //     message: `San pham voi id: ${arrId.join(",")} khong du hang`,
+      //   });
+      // } else {
+      const createdOrder = await Order.create({
+        orderItems,
+        shippingAddress: {
+          fullName,
+          address,
+          city,
+          phone,
+          province,
+          district,
+        },
+        paymentMethod,
+        shippingPrice,
+        totalPrice,
+        user: user,
+        isPaid,
+        paidAt,
+      });
+      if (createdOrder) {
+        // await EmailService.sendEmailCreateOrder(email, orderItems);
         resolve({
-          status: "ERR",
-          message: `San pham voi id: ${arrId.join(",")} khong du hang`,
+          status: "OK",
+          message: "SUCCESS",
         });
-      } else {
-        const createdOrder = await Order.create({
-          orderItems,
-          shippingAddress: {
-            fullName,
-            address,
-            city,
-            phone,
-          },
-          paymentMethod,
-          itemsPrice,
-          shippingPrice,
-          totalPrice,
-          user: user,
-          isPaid,
-          paidAt,
-        });
-        if (createdOrder) {
-          await EmailService.sendEmailCreateOrder(email, orderItems);
-          resolve({
-            status: "OK",
-            message: "SUCCESS",
-          });
-        }
       }
+      // }
     } catch (e) {
       reject(e);
     }
@@ -109,8 +111,9 @@ const getAllOrderDetails = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
       const order = await Order.find({
-        _id: id,
+        _id: id, 
       }).sort({ createdAt: -1, updatedAt: -1 });
+      console.log("order", order, id);
       if (order === null) {
         resolve({
           status: "ERR",
@@ -161,7 +164,7 @@ const cancelOrderDetails = (id, data) => {
       const promises = data.map(async (order) => {
         const productData = await Product.findOneAndUpdate(
           {
-            _id: order.product,
+            _id: order.id,
             selled: { $gte: order.amount },
           },
           {
@@ -184,7 +187,7 @@ const cancelOrderDetails = (id, data) => {
           return {
             status: "OK",
             message: "ERR",
-            id: order.product,
+            id: order.id,
           };
         }
       });

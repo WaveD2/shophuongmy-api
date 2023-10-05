@@ -1,29 +1,24 @@
 const express = require("express");
 const router = express.Router();
-
-const userController = require("../Controllers/UserController");
+const OrderController = require("../Controllers/OrderController");
 
 const {
-  authMiddleware,
   authUserMiddleware,
+  authMiddleware,
 } = require("../middleware/authMiddleware");
 
-router.post("/sign-up", userController.createUser);
-router.post("/sign-in", userController.loginUser);
-router.post("/log-out", userController.logoutUser);
-router.put("/update-user/:id", authUserMiddleware, userController.updateUser);
-router.delete(
-  "/delete-user/:id",
-  authUserMiddleware,
-  userController.deleteUser
-);
-router.get("/getAll", authMiddleware, userController.getAllUser);
+router.post("/create/:id", authUserMiddleware, OrderController.createOrder);
 router.get(
-  "/get-detail/:id",
+  "/get-all-order/:id",
   authUserMiddleware,
-  userController.getDetailsUser
+  OrderController.getAllOrderDetails
 );
-router.post("/refresh-token", userController.refreshToken);
-router.post("/delete-many", authMiddleware, userController.deleteMany);
+router.get("/get-details-order/:id", OrderController.getDetailsOrder);
+router.delete(
+  "/cancel-order/:id",
+  authUserMiddleware,
+  OrderController.cancelOrderDetails
+);
+router.get("/get-all-order", authMiddleware, OrderController.getAllOrder);
 
 module.exports = router;
