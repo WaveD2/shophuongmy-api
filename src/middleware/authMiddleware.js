@@ -35,7 +35,7 @@ const authUserMiddleware = (req, res, next) => {
       return res.status(400).json({
         message: "Error access_token expired",
       });
-    } else if (user?.isAdmin || user?.id === userID) {
+    } else if (user?.isAdmin || user?.id === userID || user?.email) {
       next();
     } else if (user?.id !== userID) {
       return res.status(400).json({

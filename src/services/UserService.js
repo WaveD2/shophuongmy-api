@@ -163,7 +163,8 @@ const getDetailsUser = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
       const user = await User.findOne({
-        _id: id,
+        // id : email user send or id
+        $or: [{ _id: id }, { email: id }],
       });
       if (user === null) {
         resolve({
@@ -182,6 +183,67 @@ const getDetailsUser = (id) => {
   });
 };
 
+const checkEmailInData = (email) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await User.findOne({
+        email: email,
+      });
+
+      if (user === null) {
+        resolve({
+          status: "ERR",
+          message: "Tài khoản không tồn tại",
+        });
+      }
+      const access_token = await generalAccessToken({
+        email: user.email,
+        isAdmin: user.isAdmin,
+      });
+
+      const refresh_token = await generalRefreshToken({
+        email: user.email,
+        isAdmin: user.isAdmin,
+      });
+
+      resolve({
+        status: 200,
+        message: "Success",
+        data: { refresh_token, access_token, user },
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+const createAccRefresh_Token = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const access_token = await generalAccessToken({
+        email: data?.email,
+      });
+
+      const refresh_token = await generalRefreshToken({
+        email: data?.email,
+      });
+      const newUser = await User.create({
+        name: data?.displayName,
+        email: data?.email,
+        isAdmin: false,
+        avatar: data?.photoURL,
+      });
+
+      resolve({
+        status: 200,
+        message: "Success",
+        data: { refresh_token, access_token, newUser },
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   createUser,
   loginUser,
@@ -190,4 +252,6 @@ module.exports = {
   getAllUser,
   getDetailsUser,
   deleteManyUser,
+  checkEmailInData,
+  createAccRefresh_Token,
 };

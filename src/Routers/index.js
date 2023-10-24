@@ -9,5 +9,5 @@ const routes = (app) => {
   app.use("/api/order", OrderRouter);
   app.use("/api/payment", PaymentRouter);
 };
-
+console.log(process.env.GOOGLE_CLIENT_ID);
 module.exports = routes;

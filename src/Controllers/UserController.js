@@ -179,6 +179,34 @@ const logoutUser = async (req, res) => {
     });
   }
 };
+
+const checkGmailGG = async (req, res) => {
+  try {
+    const user = await UserService.checkEmailInData(req.body.email);
+    return res.status(200).json({
+      data: user,
+    });
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
+
+const createAccRefresh_Token = async (req, res) => {
+  try {
+    console.log(req.body);
+    const user = await UserService.createAccRefresh_Token(req.body.data);
+    return res.status(200).json({
+      data: user,
+    });
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
@@ -189,4 +217,6 @@ module.exports = {
   refreshToken,
   logoutUser,
   deleteMany,
+  checkGmailGG,
+  createAccRefresh_Token,
 };

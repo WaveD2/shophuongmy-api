@@ -26,7 +26,6 @@ const createOrder = async (req, res) => {
       });
     }
     const response = await OrderService.createOrder(req.body);
-    console.log("response", response);
     return res.status(200).json(response);
   } catch (e) {
     return res.status(404).json({
@@ -85,7 +84,6 @@ const cancelOrderDetails = async (req, res) => {
     const response = await OrderService.cancelOrderDetails(orderId, data);
     return res.status(200).json(response);
   } catch (e) {
-    // console.log(e)
     return res.status(404).json({
       message: e,
     });

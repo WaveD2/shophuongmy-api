@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const passport = require("passport");
 
 const userController = require("../Controllers/UserController");
 
@@ -7,6 +8,9 @@ const {
   authMiddleware,
   authUserMiddleware,
 } = require("../middleware/authMiddleware");
+
+router.post("/auth/emailGG", userController.checkGmailGG);
+router.post("/auth/token", userController.createAccRefresh_Token);
 
 router.post("/sign-up", userController.createUser);
 router.post("/sign-in", userController.loginUser);
