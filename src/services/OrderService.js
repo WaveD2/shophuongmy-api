@@ -19,6 +19,7 @@ const createOrder = (newOrder) => {
       province,
       district,
       address,
+      shippingMethod,
     } = newOrder;
     try {
       const promises = orderItems.map(async (order) => {
@@ -38,8 +39,8 @@ const createOrder = (newOrder) => {
         if (productData) return productData;
         else {
           reject({
-            status: "OK",
-            message: "ERR",
+            status: "ERR",
+            message: "Sản phẩm đã hết hàng",
           });
         }
       });
@@ -60,12 +61,19 @@ const createOrder = (newOrder) => {
         user: user,
         isPaid,
         paidAt,
+        shippingMethod,
       });
       if (createdOrder) {
         await EmailService.sendEmailCreateOrder(email, orderItems);
         resolve({
           status: "OK",
-          message: "SUCCESS",
+          message:
+            "Đặt hàng thành công. Anh chị kiểm tra email để xác nhận thông báo",
+        });
+      } else {
+        reject({
+          status: "ERR",
+          message: "Đặt hàng không thành công",
         });
       }
     } catch (e) {

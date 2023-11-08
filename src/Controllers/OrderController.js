@@ -10,6 +10,7 @@ const createOrder = async (req, res) => {
       address,
       city,
       phone,
+      shippingMethod,
     } = req.body;
     if (
       !paymentMethod ||
@@ -18,7 +19,8 @@ const createOrder = async (req, res) => {
       !fullName ||
       !address ||
       !city ||
-      !phone
+      !phone ||
+      !shippingMethod
     ) {
       return res.status(200).json({
         status: "ERR",
@@ -95,7 +97,6 @@ const getAllOrder = async (req, res) => {
     const data = await OrderService.getAllOrder();
     return res.status(200).json(data);
   } catch (e) {
-    // console.log(e)
     return res.status(404).json({
       message: e,
     });

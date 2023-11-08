@@ -9,7 +9,7 @@ const productSchema = new mongoose.Schema(
     countInStock: { type: Number, required: true },
     description: { type: String },
     discount: { type: Number },
-    isStatus: { type: Array, require: true },
+    isStatus: { type: Boolean, default: true },
     size: { type: Array, require: true },
     colors: { type: Array, require: true },
   },

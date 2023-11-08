@@ -18,6 +18,7 @@ const orderSchema = new mongoose.Schema(
         },
       },
     ],
+    productInCart: { type: Array },
     shippingAddress: {
       fullName: { type: String, required: true },
       address: { type: String, required: true },
@@ -26,6 +27,7 @@ const orderSchema = new mongoose.Schema(
       district: { type: String, required: true },
       phone: { type: Number, required: true },
     },
+    shippingMethod: { type: String, required: true },
     paymentMethod: { type: String, required: true },
     shippingPrice: { type: Number, required: true },
     totalPrice: { type: Number, required: true },

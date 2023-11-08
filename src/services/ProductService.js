@@ -36,7 +36,7 @@ const createProduct = ({ newProduct }) => {
         size,
         isStatus,
       });
-      console.log("newProduct", newProduct);
+
       if (newProduct) {
         resolve({
           status: "OK",
@@ -66,6 +66,7 @@ const updateProduct = (id, data) => {
       const updatedProduct = await Product.findByIdAndUpdate(id, data, {
         new: true,
       });
+
       resolve({
         status: "OK",
         message: "SUCCESS",
@@ -140,7 +141,6 @@ const getDetailsProduct = (id) => {
 };
 
 const getAllProduct = (limit, page, sort, filter) => {
-  console.log(limit, page, sort, filter);
   return new Promise(async (resolve, reject) => {
     try {
       const totalProduct = await Product.count();
