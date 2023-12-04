@@ -10,7 +10,7 @@ const createProduct = ({ newProduct }) => {
       price,
       description,
       discount,
-      colors,
+      color,
       size,
       isStatus,
     } = newProduct;
@@ -29,10 +29,10 @@ const createProduct = ({ newProduct }) => {
         images,
         type,
         countInStock: Number(countInStock),
-        price,
+        price: Number(price),
         description,
         discount: Number(discount),
-        colors,
+        color,
         size,
         isStatus,
       });
@@ -140,22 +140,30 @@ const getDetailsProduct = (id) => {
   });
 };
 
-const getAllProduct = (limit, page, sort, filter) => {
+const getAllProduct = (limit, page, discount, price, filter) => {
   return new Promise(async (resolve, reject) => {
     try {
       const totalProduct = await Product.count();
-      if (!limit && !page && !sort && !filter) {
-        const allObject = await Product.find({});
+      const limit = 12;
+      const skip = (page - 1) * limit;
+
+      // get product default all
+      if (!discount && !price && !filter) {
+        const allObject = await Product.find().skip(skip).limit(limit);
+
         resolve({
+          status: "OK",
           data: allObject,
-          totalProduct,
+          totalDefault: totalProduct,
+          totalProductCurrent: allObject?.length,
+          page: page,
+          totalPage: Math.round(totalProduct / limit),
         });
       }
+      //get product search
+      if (filter && !price && !discount) {
+        let nameLabel = filter[0];
 
-      let allProduct = [];
-      let nameLabel = filter[0];
-
-      if (filter && !sort) {
         const allObjectFilter = await Product.find({
           [nameLabel]: { $regex: filter[1], $options: "i" },
         })
@@ -166,47 +174,52 @@ const getAllProduct = (limit, page, sort, filter) => {
           status: "OK",
           message: "Success",
           data: allObjectFilter,
-          total: allObjectFilter.length,
+          totalDefault: totalProduct,
+          totalProductCurrent: allObjectFilter.length,
           pageCurrent: Number(page + 1),
-          totalPage: Math.ceil(totalProduct / limit),
+          totalPage: Math.round(totalProduct / limit),
         });
       }
-      if (sort && !filter) {
-        const objectSort = {};
-        objectSort[sort[1]] = sort[0];
-        const allProductSort = await Product.find()
+      // get all product sort
+      else if (price || (discount && !filter)) {
+        let query = {};
+        if (price) {
+          const [minPrice, maxPrice] = price.split("-");
+
+          query.price = {
+            $gte: parseFloat(minPrice),
+            $lte: parseFloat(maxPrice),
+          };
+
+          if (discount) {
+            const [minDiscount, maxDiscount] = discount.split("-");
+            query.discount = {
+              $gte: parseFloat(minDiscount),
+              $lte: parseFloat(maxDiscount),
+            };
+          }
+        } else if (!price && discount) {
+          const [minDiscount, maxDiscount] = discount.split("-");
+          query.discount = {
+            $gte: parseFloat(minDiscount),
+            $lte: parseFloat(maxDiscount),
+          };
+        }
+
+        const allProductSort = await Product.find(query)
           .limit(limit)
-          .skip(page * limit)
-          .sort(objectSort)
+          .skip(skip)
           .sort({ createdAt: -1, updatedAt: -1 });
         resolve({
           status: "OK",
           message: "Success",
           data: allProductSort,
-          total: totalProduct,
-          pageCurrent: Number(page + 1),
-          totalPage: Math.ceil(totalProduct / limit),
+          totalDefault: totalProduct,
+          totalProductCurrent: allProductSort.length,
+          pageCurrent: Number(page),
+          totalPage: Math.round(totalProduct / limit),
         });
       }
-      if (!limit) {
-        allProduct = await Product.find().sort({
-          createdAt: -1,
-          updatedAt: -1,
-        });
-      } else {
-        allProduct = await Product.find()
-          .limit(limit)
-          .skip(page * limit)
-          .sort({ createdAt: -1, updatedAt: -1 });
-      }
-      resolve({
-        status: "OK",
-        message: "Success",
-        data: allProduct,
-        total: totalProduct,
-        pageCurrent: Number(page + 1),
-        totalPage: Math.ceil(totalProduct / limit),
-      });
     } catch (e) {
       reject(e);
     }
@@ -228,17 +241,27 @@ const getAllType = () => {
   });
 };
 
-const getProductType = ({ type }) => {
+const getProductType = ({ type, page }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const allProductType = await Product.find({ type }).sort({
-        createdAt: -1,
-        updatedAt: -1,
-      });
+      const totalProduct = await Product.find({ type: { $in: type } });
+      const limit = 12;
+      const skip = (+page - 1) * limit;
+
+      const allProductType = await Product.find({ type: { $in: type } })
+        .skip(skip)
+        .limit(limit)
+        .sort({
+          createdAt: -1,
+          updatedAt: -1,
+        });
       resolve({
         status: "OK",
-        message: "Success",
         data: allProductType,
+        totalDefault: totalProduct.length,
+        totalProductCurrent: allProductType?.length,
+        page: +page,
+        totalPage: Math.round(totalProduct.length / limit),
       });
     } catch (e) {
       reject(e);

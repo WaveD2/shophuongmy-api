@@ -101,14 +101,18 @@ const deleteMany = async (req, res) => {
 
 const getAllProduct = async (req, res) => {
   try {
-    const { limit, page, sort, filter } = req.query;
+    const { limit, page, filter, discount, price } = req.query;
+
     const response = await ProductService.getAllProduct(
       Number(limit) || null,
-      Number(page) || 0,
-      sort,
+      Number(page) || 1,
+      discount,
+      price,
       filter
     );
-    return res.status(200).json(response);
+    return res.status(200).json({
+      data: response,
+    });
   } catch (e) {
     return res.status(404).json({
       message: e,
@@ -127,13 +131,14 @@ const getAllType = async (req, res) => {
   }
 };
 const getProductType = async (req, res) => {
-  const { type } = req.params;
+  const { type, page } = req.params;
+
   const { data: allType } = await ProductService.getAllType();
   const isCheckType = allType.includes(type);
 
   if (type && isCheckType) {
     try {
-      const response = await ProductService.getProductType({ type });
+      const response = await ProductService.getProductType({ type, page });
       return res.status(200).json(response);
     } catch (e) {
       return res.status(404).json({

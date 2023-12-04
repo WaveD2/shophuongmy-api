@@ -4,14 +4,14 @@ const productSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, unique: true },
     images: { type: Array, required: true },
-    type: { type: String, required: true },
+    type: { type: Array, required: true },
     price: { type: Number, required: true },
     countInStock: { type: Number, required: true },
-    description: { type: String },
+    description: { type: String, required: true },
     discount: { type: Number },
     isStatus: { type: Boolean, default: true },
     size: { type: Array, require: true },
-    colors: { type: Array, require: true },
+    color: { type: Array, require: true },
   },
   {
     timestamps: true,

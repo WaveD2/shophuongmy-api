@@ -9,13 +9,12 @@ const authMiddleware = (req, res, next) => {
 
   const token = req.headers.token.split(" ")[1];
 
-  jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
+  jwt.verify(token, process.env.ACCESS_TOKEN, async (err, user) => {
     if (err || !user?.isAdmin) {
       return res.status(400).json({
         message: "Error authMiddleWare",
       });
-    }
-    if (user?.isAdmin) {
+    } else if (user?.isAdmin) {
       next();
     }
   });
