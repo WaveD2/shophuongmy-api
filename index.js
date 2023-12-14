@@ -25,7 +25,7 @@ app.get("*", (req, res) => {
 });
 
 mongoose
-  .connect("mongodb://27017/Tiki")
+  .connect("mongodb://127.0.0.1:27017/Tiki")
   .then(() => {
     console.log("Connect Db success!");
   })
