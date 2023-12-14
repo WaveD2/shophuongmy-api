@@ -25,12 +25,12 @@ app.get("*", (req, res) => {
 });
 
 mongoose
-  .connect(`${process.env.MONGO_DB || "mongodb://localhost:27017/Tiki"}`)
+  .connect("mongodb://localhost:27017/Tiki")
   .then(() => {
     console.log("Connect Db success!");
   })
   .catch((err) => {
-    console.log("Lỗi kết db");
+    console.log("Lỗi kết db", err);
   });
 app.listen(port, () => {
   console.log("Server is running in port: ", +port);
