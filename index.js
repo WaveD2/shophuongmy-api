@@ -20,8 +20,12 @@ app.use(bodyParser.json());
 
 routes(app);
 
+app.get("*", (req, res) => {
+  res.send("Nhập Sai Đường Dẫn! Vui Lòng Nhập Lại >.<");
+});
+
 mongoose
-  .connect(`${process.env.MONGO_DB}`)
+  .connect(`${process.env.MONGO_DB || "mongodb://localhost:27017/Tiki"}`)
   .then(() => {
     console.log("Connect Db success!");
   })
