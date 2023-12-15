@@ -25,7 +25,10 @@ app.get("*", (req, res) => {
 });
 
 mongoose
-  .connect("mongodb://127.0.0.1/Tiki")
+  .connect("mongodb://127.0.0.1:27017/Tiki", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     console.log("Connect Db success!");
   })
