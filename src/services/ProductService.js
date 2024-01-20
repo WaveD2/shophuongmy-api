@@ -162,14 +162,12 @@ const getAllProduct = (limit, page, discount, price, filter) => {
       }
       //get product search
       if (filter && !price && !discount) {
-        let nameLabel = filter[0];
-
-        const allObjectFilter = await Product.find({
-          [nameLabel]: { $regex: filter[1], $options: "i" },
-        })
-          .limit(limit)
-          .skip(page * limit)
-          .sort({ createdAt: -1, updatedAt: -1 });
+        let allObjectFilter = await Product.find({
+          $or: [
+            { name: { $regex: filter, $options: "i" } },
+            { description: { $regex: filter, $options: "i" } },
+          ],
+        }).sort({ createdAt: -1, updatedAt: -1 });
         resolve({
           status: "OK",
           message: "Success",
