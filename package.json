@@ -12,7 +12,8 @@
     "nodemailer-plugin-inline-base64": "^2.1.1",
     "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0",
-    "passport-google-oidc": "^0.1.0"
+    "passport-google-oidc": "^0.1.0",
+    "unorm": "^1.6.0"
   },
   "name": "server",
   "version": "1.0.0",

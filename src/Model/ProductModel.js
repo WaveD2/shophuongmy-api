@@ -12,6 +12,7 @@ const productSchema = new mongoose.Schema(
     isStatus: { type: Boolean, default: true },
     size: { type: Array, require: true },
     color: { type: Array, require: true },
+    selled: { type: Number },
   },
   {
     timestamps: true,

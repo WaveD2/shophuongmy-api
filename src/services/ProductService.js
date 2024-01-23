@@ -1,4 +1,5 @@
 const Product = require("../Model/ProductModel");
+const { UnormKeyWords } = require("./unormKeyWords");
 
 const createProduct = ({ newProduct }) => {
   return new Promise(async (resolve, reject) => {
@@ -162,6 +163,7 @@ const getAllProduct = (limit, page, discount, price, filter) => {
       }
       //get product search
       if (filter && !price && !discount) {
+        let normalizedQuery = await UnormKeyWords(filter);
         let allObjectFilter = await Product.find({
           $or: [
             { name: { $regex: filter, $options: "i" } },
